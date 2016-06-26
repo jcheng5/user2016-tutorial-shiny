@@ -1,0 +1,19 @@
+@media print  
+{
+    .section {
+        page-break-inside: avoid;
+    }
+}
+
+.notes {
+  border-left: 2px solid #DDD;
+  padding-left: 40px;
+  font-family: Merriweather, Times;
+  line-height: 2;
+}
+
+h2, hr {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 2px dashed #999;
+}

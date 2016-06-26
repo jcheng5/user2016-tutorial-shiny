@@ -1,0 +1,35 @@
+.reveal .sourceCode.r .kw, .sourceCode.r .er {
+  color:inherit;
+  font-weight: normal;
+}
+.reveal .sourceCode.r .co {
+  font-style: normal;
+}
+
+.reveal .slides {
+  text-align: inherit;
+}
+
+.reveal .slide.level2 h1 {
+  font-size: 48px;
+}
+
+.reveal pre code {
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.reveal .takeaway h3, .reveal .takeaways .current-fragment {
+  color: yellow;
+}
+
+.reveal .reactive-graph img {
+  border: 0;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.reveal .slide .tip {
+  margin-top: 3em;
+  font-size: 80%;
+}
