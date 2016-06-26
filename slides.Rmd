@@ -1,7 +1,7 @@
 ---
-title: "Principles of Reactivity"
+title: "Effective Shiny Programming"
 author: "Joe Cheng [&lt;joe@rstudio.com&gt;](mailto:joe@rstudio.com)"
-date: "\\#ShinyDevConf — January 30, 2016"
+date: "\\#useR2016 — June 27, 2016"
 output:
   revealjs::revealjs_presentation:
     theme: night
@@ -22,6 +22,12 @@ We'll use RStudio Server for this tutorial. To grab an account:
 #### http://user2016.joecheng.com/signup/
 
 (Don't share user accounts with neighbors---if they sign in with your username, RStudio Server will end your session!)
+
+&nbsp;
+
+Slides and exercises also available on GitHub:
+
+https://github.com/jcheng5/user2016-tutorial-shiny
 
 
 ## Warm up: Side effects
