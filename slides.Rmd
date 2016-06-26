@@ -887,3 +887,13 @@ An **action** is where you care very much that the code executes, and there is n
 - No value in `numericInput`
 - The input in question hasn't been added to the page at all
 
+## Example
+
+> - **`req_v1_broken.R`**  
+Doesn't even work, too many errors
+
+> - **`req_v2_badfix.R`**  
+Naive approach---manually check every little precondition (verbose, error-prone!)
+
+> - **`req_v3_goodfix.R`**  
+Much more concise and robust approach
