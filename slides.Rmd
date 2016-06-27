@@ -17,6 +17,10 @@ output:
 
 ## Before we begin
 
+Wifi username: `useR2016` Password: `Conf@1039`
+
+&nbsp;
+
 We'll use RStudio Server for this tutorial. To grab an account:
 
 #### http://user2016.joecheng.com/signup/
@@ -28,6 +32,35 @@ We'll use RStudio Server for this tutorial. To grab an account:
 Slides and exercises also available on GitHub:
 
 https://github.com/jcheng5/user2016-tutorial-shiny
+
+
+
+## Today's agenda
+
+- Effective reactive programming
+- Checking preconditions with `req()`
+- Preview of upcoming features
+    - `insertUI`/`removeUI`
+    - Using databases with Shiny
+    - Bookmarkable state
+
+
+
+## Effective reactive programming
+
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+
+
+We'll have to keep things moving along to be done on time.
+
+If you have trouble keeping up, you can try again later: Google "shiny conference videos"
+
 
 
 ## Warm up: Side effects

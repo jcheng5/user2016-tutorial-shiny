@@ -127,12 +127,39 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <section id="before-we-begin" class="slide level2">
 <h1>Before we begin</h1>
+<p>Wifi username: <code>useR2016</code> Password: <code>Conf@1039</code></p>
+<p> </p>
 <p>We’ll use RStudio Server for this tutorial. To grab an account:</p>
 <h4 id="httpuser2016.joecheng.comsignup"><a href="http://user2016.joecheng.com/signup/" class="uri">http://user2016.joecheng.com/signup/</a></h4>
 <p>(Don’t share user accounts with neighbors—if they sign in with your username, RStudio Server will end your session!)</p>
 <p> </p>
 <p>Slides and exercises also available on GitHub:</p>
 <p><a href="https://github.com/jcheng5/user2016-tutorial-shiny" class="uri">https://github.com/jcheng5/user2016-tutorial-shiny</a></p>
+</section>
+<section id="todays-agenda" class="slide level2">
+<h1>Today’s agenda</h1>
+<ul>
+<li>Effective reactive programming</li>
+<li>Checking preconditions with <code>req()</code></li>
+<li>Preview of upcoming features
+<ul>
+<li><code>insertUI</code>/<code>removeUI</code></li>
+<li>Using databases with Shiny</li>
+<li>Bookmarkable state</li>
+</ul></li>
+</ul>
+</section>
+<section id="effective-reactive-programming" class="slide level2">
+<h1>Effective reactive programming</h1>
+<p> <br />
+ <br />
+ <br />
+ <br />
+ <br />
+ <br />
+ </p>
+<p>We’ll have to keep things moving along to be done on time.</p>
+<p>If you have trouble keeping up, you can try again later: Google “shiny conference videos”</p>
 </section>
 <section id="warm-up-side-effects" class="slide level2">
 <h1>Warm up: Side effects</h1>
@@ -855,14 +882,11 @@ model &lt;-<span class="st"> </span><span class="kw">reactive</span>({
 </section>
 <section id="insertuiremoveui" class="slide level2">
 <h1><code>insertUI</code>/<code>removeUI</code></h1>
-<ul>
-<li>New functions that complement <code>uiOutput</code>/<code>renderUI</code>.
-<ul>
-<li><code>uiOutput</code> populates a div reactively (<code>renderUI</code>); each invocation of the <code>renderUI</code> code <em>replaces</em> the entire div.</li>
-<li><code>insertUI</code> is used to <em>add</em> new UI to the page; each invocation of <code>insertUI</code> adds more UI, without removing any.</li>
-<li><code>removeUI</code> removes specific HTML elements from the page.</li>
-</ul></li>
-</ul>
+<p>New functions that complement <code>uiOutput</code>/<code>renderUI</code>.</p>
+<pre><code>- `uiOutput` populates a div reactively (`renderUI`); each invocation of the `renderUI` code *replaces* the entire div.
+- `insertUI` is used to *add* new UI to the page; nothing is removed or replaced.
+- `removeUI` removes specific HTML elements from the page.</code></pre>
+<p>Makes some types of apps much easier to code.</p>
 </section>
 <section id="shiny-and-databases" class="slide level2">
 <h1>Shiny and databases</h1>
