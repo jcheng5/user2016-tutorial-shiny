@@ -878,22 +878,162 @@ An **action** is where you care very much that the code executes, and there is n
 - `shinySignals` - Higher order reactives by Hadley
 
 
-## Abort computations with `req()`
 
-**Use `req()` to halt the current reactive/observer/output if a prerequisite condition is not met.**
+## Checking preconditions with `req()`
 
-- `selectInput` has no item selected
-- No text entered into `textInput`
-- No value in `numericInput`
-- The input in question hasn't been added to the page at all
+Sometimes a computation depends on inputs or values that may or may not be available.
 
-## Example
+- Needs user to make a choice for which no reasonable default exists
+- Depends on data that must be uploaded by the user
+- Reads an input that doesn't initially exist as part of the page, but rather, is part of a `uiOutput`
 
-> - **`req_v1_broken.R`**  
-Doesn't even work, too many errors
+See `req_v1_broken.R`
 
-> - **`req_v2_badfix.R`**  
-Naive approach---manually check every little precondition (verbose, error-prone!)
 
-> - **`req_v3_goodfix.R`**  
-Much more concise and robust approach
+
+## Naive solution: `return(NULL)`
+
+**Check for these conditions (mostly using `is.null()` or `== ""`) and `return(NULL)`**
+
+This works, but now everyone that reads this reactive must also check for `NULL` and return early, and so on, layer after layer...
+
+See `req_v2_badfix.R`
+
+
+
+## Can we do better?
+
+When we detect an unmet precondition, we don't really want to return a `NULL` result; it makes more sense to treat it like an error:
+
+`stopifnot(!is.null(input$dataset))`
+
+Except that for these cases, we don't want red error messages in the UI, and we don't want observers to panic due to uncaught exceptions.
+
+
+
+## Correct solution: Use `req()`
+
+`req()` is like a custom version of `stopifnot` that:
+
+1. Doesn't show an error message in Shiny, and doesn't cause observers to panic
+2. Performs some common "truthy/falsy" tests to save you some typing (see `?req` for details)
+
+See `req_v3_goodfix.R`
+
+
+
+## Coming soon
+
+- Bookmarkable state
+- Database improvements and best practices
+- `insertUI`/`removeUI`
+- Modal dialogs and notifications
+- Automatically reconnect on grey-out (opt-in)
+- reactlog now shows elapsed time for reactive expressions and observers 
+- Better looking `tableOutput`
+
+
+
+## `insertUI`/`removeUI`
+
+New functions that complement `uiOutput`/`renderUI`.
+
+    - `uiOutput` populates a div reactively (`renderUI`); each invocation of the `renderUI` code *replaces* the entire div.
+    - `insertUI` is used to *add* new UI to the page; nothing is removed or replaced.
+    - `removeUI` removes specific HTML elements from the page.
+
+Makes some types of apps much easier to code.
+
+
+## Shiny and databases
+
+- Q: “Can Shiny apps use databases?”  
+A: “Uh, obviously... it’s just R...”
+- But there is a difference between using databases interactively, and using them in deployed apps
+  - Managing database connections
+  - Handling potentially malicious input safely
+- The solution is part code, part public service announcements (see new "Databases" section of [shiny.rstudio.com/articles](http://shiny.rstudio.com/articles))
+
+
+
+## SQL injection
+
+```r
+query <- paste0(
+  "SELECT * FROM table WHERE id = '",
+  input$id,
+  "';")
+dbGetQuery(conn, query)
+```
+
+(It's just a SELECT query; could go wrong?)
+
+
+
+##  {.reactive-graph data-background=white}
+
+![](bobbytables.png)
+
+https://xkcd.com/327/
+
+
+
+## Use interpolation
+
+```r
+query <- sqlInterpolate(conn,
+  "SELECT * FROM table WHERE id = ?id;",
+  id = input$id)
+dbGetQuery(conn, query)
+```
+
+If you ever find yourself `paste`-ing together SQL queries, alarm bells should sound in your head!
+
+By using `sqlInterpolate`, you're protected against SQL injection.
+
+(Still better are _prepared statements_---coming to DBI soon!)
+
+
+
+## Bookmarkable state
+
+- Allow users to interact with an app, then “snapshot” the resulting state as a URL that can be bookmarked or shared
+- One of the longest-standing feature requests in Shiny
+- Custom solutions built by many people in many ways over the years, but surprisingly hard to generalize
+- Our solution is informed by prior work by Vincent Nijs ([radiant](https://github.com/vnijs/radiant)) and Andrzej Oleś ([shinyURL](https://github.com/aoles/shinyURL))
+
+
+
+## Bookmarkable state
+
+- Natively integrated into Shiny—cleaner syntax, better user experience, more robust restore logic
+- Highly configurable
+  - Automatic save/restore of inputs; manual save/restore of custom values and/or filesystem data
+  - Either **encode** these values directly in (long/ugly) URL, or **persist** them on the server and return a short URL with an ID
+- Currently on a branch (wch/shiny@bookmarkable-state) for testing; hopefully landing on master within two or three weeks
+
+
+
+## Preparing your app
+
+1. Wrap your UI in function(req):  
+```r
+ui <- function(req) {
+  fluidPage(...)
+}
+```
+2. Add `saveStateButton()` to UI
+3. In server function, call `configureBookmark(...)`
+4. If necessary, provide your own callback functions to customize saving/restoring behavior
+
+
+
+## Bookmarkable state demo
+
+
+
+## Deploying
+
+- For `configureBookmark(type="persist")`, server support is necessary
+- Shiny Server, Shiny Server Pro, and RStudio Connect support coming this summer
+- ShinyApps.io support TBD (can still use encode mode)

@@ -5,10 +5,10 @@
   <meta name="generator" content="pandoc">
   <meta name="author" content="Joe Cheng &lt;joe@rstudio.com&gt;" />
   <title>Effective Shiny Programming</title>
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="slides_files/revealjs_presentation/css/reveal.min.css"/>
+  <link rel="stylesheet" href="slides_files/reveal.js-3.2.0/css/reveal.css"/>
 
 
 <style type="text/css">
@@ -49,7 +49,7 @@ code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* Com
 code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 </style>
 
-<link rel="stylesheet" href="slides_files/revealjs_presentation/css/theme/night.css" id="theme">
+<link rel="stylesheet" href="slides_files/reveal.js-3.2.0/css/theme/night.css" id="theme">
 
 <style type="text/css">
 .reveal section img {
@@ -69,10 +69,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       padding: 0px 0px;
     }
 
-     .reveal .title {
-        margin-top: 125px;
-        margin-bottom: 50px;
-     }
+
 
     .reveal table {
       border-width: 1px;
@@ -110,11 +107,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       var link = document.createElement( 'link' );
       link.rel = 'stylesheet';
       link.type = 'text/css';
-      link.href = window.location.search.match( /print-pdf/gi ) ? 'slides_files/revealjs_presentation/css/print/pdf.css' : 'slides_files/revealjs_presentation/css/print/paper.css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'slides_files/reveal.js-3.2.0/css/print/pdf.css' : 'slides_files/reveal.js-3.2.0/css/print/paper.css';
       document.getElementsByTagName( 'head' )[0].appendChild( link );
     </script>
     <!--[if lt IE 9]>
-    <script src="slides_files/revealjs_presentation/lib/js/html5shiv.js"></script>
+    <script src="slides_files/reveal.js-3.2.0/lib/js/html5shiv.js"></script>
     <![endif]-->
 
 </head>
@@ -813,53 +810,159 @@ model &lt;-<span class="st"> </span><span class="kw">reactive</span>({
 <li><code>shinySignals</code> - Higher order reactives by Hadley</li>
 </ul>
 </section>
-<section id="abort-computations-with-req" class="slide level2">
-<h1>Abort computations with <code>req()</code></h1>
-<p><strong>Use <code>req()</code> to halt the current reactive/observer/output if a prerequisite condition is not met.</strong></p>
+<section id="checking-preconditions-with-req" class="slide level2">
+<h1>Checking preconditions with <code>req()</code></h1>
+<p>Sometimes a computation depends on inputs or values that may or may not be available.</p>
 <ul>
-<li><code>selectInput</code> has no item selected</li>
-<li>No text entered into <code>textInput</code></li>
-<li>No value in <code>numericInput</code></li>
-<li>The input in question hasn’t been added to the page at all</li>
+<li>Needs user to make a choice for which no reasonable default exists</li>
+<li>Depends on data that must be uploaded by the user</li>
+<li>Reads an input that doesn’t initially exist as part of the page, but rather, is part of a <code>uiOutput</code></li>
+</ul>
+<p>See <code>req_v1_broken.R</code></p>
+</section>
+<section id="naive-solution-returnnull" class="slide level2">
+<h1>Naive solution: <code>return(NULL)</code></h1>
+<p><strong>Check for these conditions (mostly using <code>is.null()</code> or <code>== &quot;&quot;</code>) and <code>return(NULL)</code></strong></p>
+<p>This works, but now everyone that reads this reactive must also check for <code>NULL</code> and return early, and so on, layer after layer…</p>
+<p>See <code>req_v2_badfix.R</code></p>
+</section>
+<section id="can-we-do-better" class="slide level2">
+<h1>Can we do better?</h1>
+<p>When we detect an unmet precondition, we don’t really want to return a <code>NULL</code> result; it makes more sense to treat it like an error:</p>
+<p><code>stopifnot(!is.null(input$dataset))</code></p>
+<p>Except that for these cases, we don’t want red error messages in the UI, and we don’t want observers to panic due to uncaught exceptions.</p>
+</section>
+<section id="correct-solution-use-req" class="slide level2">
+<h1>Correct solution: Use <code>req()</code></h1>
+<p><code>req()</code> is like a custom version of <code>stopifnot</code> that:</p>
+<ol type="1">
+<li>Doesn’t show an error message in Shiny, and doesn’t cause observers to panic</li>
+<li>Performs some common “truthy/falsy” tests to save you some typing (see <code>?req</code> for details)</li>
+</ol>
+<p>See <code>req_v3_goodfix.R</code></p>
+</section>
+<section id="coming-soon" class="slide level2">
+<h1>Coming soon</h1>
+<ul>
+<li>Bookmarkable state</li>
+<li>Database improvements and best practices</li>
+<li><code>insertUI</code>/<code>removeUI</code></li>
+<li>Modal dialogs and notifications</li>
+<li>Automatically reconnect on grey-out (opt-in)</li>
+<li>reactlog now shows elapsed time for reactive expressions and observers</li>
+<li>Better looking <code>tableOutput</code></li>
 </ul>
 </section>
-<section id="example" class="slide level2">
-<h1>Example</h1>
+<section id="insertuiremoveui" class="slide level2">
+<h1><code>insertUI</code>/<code>removeUI</code></h1>
 <ul>
-<li class="fragment"><strong><code>req_v1_broken.R</code></strong><br />
-Doesn’t even work, too many errors</li>
+<li>New functions that complement <code>uiOutput</code>/<code>renderUI</code>.
+<ul>
+<li><code>uiOutput</code> populates a div reactively (<code>renderUI</code>); each invocation of the <code>renderUI</code> code <em>replaces</em> the entire div.</li>
+<li><code>insertUI</code> is used to <em>add</em> new UI to the page; each invocation of <code>insertUI</code> adds more UI, without removing any.</li>
+<li><code>removeUI</code> removes specific HTML elements from the page.</li>
+</ul></li>
 </ul>
+</section>
+<section id="shiny-and-databases" class="slide level2">
+<h1>Shiny and databases</h1>
 <ul>
-<li class="fragment"><strong><code>req_v2_badfix.R</code></strong><br />
-Naive approach—manually check every little precondition (verbose, error-prone!)</li>
+<li>Q: “Can Shiny apps use databases?”<br />
+A: “Uh, obviously… it’s just R…”</li>
+<li>But there is a difference between using databases interactively, and using them in deployed apps</li>
+<li>Managing database connections</li>
+<li>Handling potentially malicious input safely</li>
+<li>The solution is part code, part public service announcements (see new “Databases” section of <a href="http://shiny.rstudio.com/articles">shiny.rstudio.com/articles</a>)</li>
 </ul>
+</section>
+<section id="sql-injection" class="slide level2">
+<h1>SQL injection</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">query &lt;-<span class="st"> </span><span class="kw">paste0</span>(
+  <span class="st">&quot;SELECT * FROM table WHERE id = &#39;&quot;</span>,
+  input$id,
+  <span class="st">&quot;&#39;;&quot;</span>)
+<span class="kw">dbGetQuery</span>(conn, query)</code></pre></div>
+<p>(It’s just a SELECT query; could go wrong?)</p>
+</section>
+<section id="section-10" class="slide level2 reactive-graph" data-background="white">
+<h1></h1>
+<p><img src="bobbytables.png" /></p>
+<p><a href="https://xkcd.com/327/" class="uri">https://xkcd.com/327/</a></p>
+</section>
+<section id="use-interpolation" class="slide level2">
+<h1>Use interpolation</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">query &lt;-<span class="st"> </span><span class="kw">sqlInterpolate</span>(conn,
+  <span class="st">&quot;SELECT * FROM table WHERE id = ?id;&quot;</span>,
+  <span class="dt">id =</span> input$id)
+<span class="kw">dbGetQuery</span>(conn, query)</code></pre></div>
+<p>If you ever find yourself <code>paste</code>-ing together SQL queries, alarm bells should sound in your head!</p>
+<p>By using <code>sqlInterpolate</code>, you’re protected against SQL injection.</p>
+<p>(Still better are <em>prepared statements</em>—coming to DBI soon!)</p>
+</section>
+<section id="bookmarkable-state" class="slide level2">
+<h1>Bookmarkable state</h1>
 <ul>
-<li class="fragment"><strong><code>req_v3_goodfix.R</code></strong><br />
-Much more concise and robust approach</li>
+<li>Allow users to interact with an app, then “snapshot” the resulting state as a URL that can be bookmarked or shared</li>
+<li>One of the longest-standing feature requests in Shiny</li>
+<li>Custom solutions built by many people in many ways over the years, but surprisingly hard to generalize</li>
+<li>Our solution is informed by prior work by Vincent Nijs (<a href="https://github.com/vnijs/radiant">radiant</a>) and Andrzej Oleś (<a href="https://github.com/aoles/shinyURL">shinyURL</a>)</li>
+</ul>
+</section>
+<section id="bookmarkable-state-1" class="slide level2">
+<h1>Bookmarkable state</h1>
+<ul>
+<li>Natively integrated into Shiny—cleaner syntax, better user experience, more robust restore logic</li>
+<li>Highly configurable</li>
+<li>Automatic save/restore of inputs; manual save/restore of custom values and/or filesystem data</li>
+<li>Either <strong>encode</strong> these values directly in (long/ugly) URL, or <strong>persist</strong> them on the server and return a short URL with an ID</li>
+<li>Currently on a branch (<a href="mailto:wch/shiny@bookmarkable-state">wch/shiny@bookmarkable-state</a>) for testing; hopefully landing on master within two or three weeks</li>
+</ul>
+</section>
+<section id="preparing-your-app" class="slide level2">
+<h1>Preparing your app</h1>
+<ol type="1">
+<li><p>Wrap your UI in function(req):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ui &lt;-<span class="st"> </span>function(req) {
+  <span class="kw">fluidPage</span>(...)
+}</code></pre></div></li>
+<li>Add <code>saveStateButton()</code> to UI</li>
+<li>In server function, call <code>configureBookmark(...)</code></li>
+<li><p>If necessary, provide your own callback functions to customize saving/restoring behavior</p></li>
+</ol>
+</section>
+<section id="bookmarkable-state-demo" class="slide level2">
+<h1>Bookmarkable state demo</h1>
+</section>
+<section id="deploying" class="slide level2">
+<h1>Deploying</h1>
+<ul>
+<li>For <code>configureBookmark(type=&quot;persist&quot;)</code>, server support is necessary</li>
+<li>Shiny Server, Shiny Server Pro, and RStudio Connect support coming this summer</li>
+<li>ShinyApps.io support TBD (can still use encode mode)</li>
 </ul>
 </section>
     </div>
   </div>
 
-  <script src="slides_files/revealjs_presentation/lib/js/head.min.js"></script>
-  <script src="slides_files/revealjs_presentation/js/reveal.min.js"></script>
+  <script src="slides_files/reveal.js-3.2.0/lib/js/head.min.js"></script>
+  <script src="slides_files/reveal.js-3.2.0/js/reveal.js"></script>
 
   <script>
 
-      // Full list of configuration options available here:
+      // Full list of configuration options available at:
       // https://github.com/hakimel/reveal.js#configuration
       Reveal.initialize({
-        controls: true,
-        progress: true,
-        history: true,
+        // Vertical centering of slides
         center: false,
-        transition: 'none',
-        backgroundTransition: 'default',
-        
-        // Optional libraries used to extend on reveal.js
-        dependencies: []});
-    </script>
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
 
+        // Optional reveal.js plugins
+        dependencies: []
+      });
+    </script>
   <!-- dynamically load mathjax for compatibility with self-contained -->
   <script>
     (function () {
@@ -880,6 +983,7 @@ Much more concise and robust approach</li>
     }
   })();
 </script>
+
 
   </body>
 </html>
