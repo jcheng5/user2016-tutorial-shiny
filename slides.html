@@ -886,7 +886,8 @@ model &lt;-<span class="st"> </span><span class="kw">reactive</span>({
 <pre><code>- `uiOutput` populates a div reactively (`renderUI`); each invocation of the `renderUI` code *replaces* the entire div.
 - `insertUI` is used to *add* new UI to the page; nothing is removed or replaced.
 - `removeUI` removes specific HTML elements from the page.</code></pre>
-<p>Makes some types of apps much easier to code.</p>
+<p>Makes some types of apps much easier to code. (“How do I implement an ‘Add plot’ button?”)</p>
+<p>Demo: <code>shiny::runApp(&quot;insertui.R&quot;)</code> (try uploading <code>iris.csv</code>)</p>
 </section>
 <section id="shiny-and-databases" class="slide level2">
 <h1>Shiny and databases</h1>
@@ -956,6 +957,7 @@ A: “Uh, obviously… it’s just R…”</li>
 </section>
 <section id="bookmarkable-state-demo" class="slide level2">
 <h1>Bookmarkable state demo</h1>
+<p><code>shiny::runApp(&quot;bookmark.R&quot;)</code></p>
 </section>
 <section id="deploying" class="slide level2">
 <h1>Deploying</h1>

@@ -975,7 +975,10 @@ New functions that complement `uiOutput`/`renderUI`.
     - `insertUI` is used to *add* new UI to the page; nothing is removed or replaced.
     - `removeUI` removes specific HTML elements from the page.
 
-Makes some types of apps much easier to code.
+Makes some types of apps much easier to code. ("How do I implement an 'Add plot' button?")
+
+Demo: `shiny::runApp("insertui.R")` (try uploading `iris.csv`)
+
 
 
 ## Shiny and databases
@@ -1062,6 +1065,8 @@ ui <- function(req) {
 
 
 ## Bookmarkable state demo
+
+`shiny::runApp("bookmark.R")`
 
 
 
