@@ -34,7 +34,7 @@ server <- function(input, output, session) {
     # updateCheckboxGroupInput modifies input$vars asynchronously.
     # Let no other reactive make use of input$vars until the value of input$vars
     # has had a chance to be updated from the client.
-    invalidateReactiveValue(input, "vars")
+    freezeReactiveValue(input, "vars")
   }, priority = 1)
   
   output$plot <- renderPlot({
