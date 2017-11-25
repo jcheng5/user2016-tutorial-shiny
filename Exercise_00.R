@@ -13,7 +13,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  # Assignment: Plot the first input$nrows columns of a
+  # Assignment: Plot the first input$nrows rows of a
   # data frame of your choosing, using head() and plot()
 }
 
